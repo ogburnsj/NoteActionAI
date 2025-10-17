@@ -4,8 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { isUnauthorizedError } from "@/lib/authUtils";
 
 export function AddMealDialog() {
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [mealName, setMealName] = useState("");
   const [calories, setCalories] = useState("");
@@ -13,14 +18,68 @@ export function AddMealDialog() {
   const [carbs, setCarbs] = useState("");
   const [fat, setFat] = useState("");
 
+  const createMealMutation = useMutation({
+    mutationFn: async (data: {
+      name: string;
+      date: string;
+      time: string;
+      calories: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+    }) => {
+      const res = await apiRequest("POST", "/api/meals", data);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/meals"] });
+      toast({
+        title: "Success",
+        description: "Meal added successfully!",
+      });
+      setOpen(false);
+      setMealName("");
+      setCalories("");
+      setProtein("");
+      setCarbs("");
+      setFat("");
+    },
+    onError: (error: Error) => {
+      if (isUnauthorizedError(error)) {
+        window.location.href = "/api/login";
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to add meal. Please try again.",
+          variant: "destructive",
+        });
+      }
+    },
+  });
+
   const handleSubmit = () => {
-    console.log("Meal added:", { mealName, calories, protein, carbs, fat });
-    setOpen(false);
-    setMealName("");
-    setCalories("");
-    setProtein("");
-    setCarbs("");
-    setFat("");
+    if (!mealName.trim() || !calories || !protein || !carbs || !fat) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    const time = now.toTimeString().slice(0, 5);
+
+    createMealMutation.mutate({
+      name: mealName,
+      date: today,
+      time,
+      calories: parseInt(calories),
+      protein: parseInt(protein),
+      carbs: parseInt(carbs),
+      fat: parseInt(fat),
+    });
   };
 
   return (
@@ -96,11 +155,22 @@ export function AddMealDialog() {
           </div>
 
           <div className="flex gap-2 pt-4">
-            <Button variant="outline" onClick={() => setOpen(false)} className="flex-1" data-testid="button-cancel">
+            <Button 
+              variant="outline" 
+              onClick={() => setOpen(false)} 
+              className="flex-1" 
+              data-testid="button-cancel"
+              disabled={createMealMutation.isPending}
+            >
               Cancel
             </Button>
-            <Button onClick={handleSubmit} className="flex-1" data-testid="button-save-meal">
-              Save Meal
+            <Button 
+              onClick={handleSubmit} 
+              className="flex-1" 
+              data-testid="button-save-meal"
+              disabled={createMealMutation.isPending}
+            >
+              {createMealMutation.isPending ? "Saving..." : "Save Meal"}
             </Button>
           </div>
         </div>

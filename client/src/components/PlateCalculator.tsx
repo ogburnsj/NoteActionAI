@@ -1,16 +1,23 @@
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface PlateCalculatorProps {
   barWeight: number;
   availablePlates: number[];
   unit: "lb" | "kg";
+  initialWeight?: number | null;
 }
 
-export function PlateCalculator({ barWeight, availablePlates, unit }: PlateCalculatorProps) {
+export function PlateCalculator({ barWeight, availablePlates, unit, initialWeight }: PlateCalculatorProps) {
   const [targetWeight, setTargetWeight] = useState("");
+
+  useEffect(() => {
+    if (initialWeight !== null && initialWeight !== undefined) {
+      setTargetWeight(initialWeight.toString());
+    }
+  }, [initialWeight]);
 
   const calculatePlates = (total: number): number[] => {
     const weightPerSide = (total - barWeight) / 2;

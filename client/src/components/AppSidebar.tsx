@@ -54,9 +54,11 @@ export function AppSidebar() {
       <SidebarFooter className="p-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={() => console.log("Logout")} data-testid="button-logout">
-              <LogOut />
-              <span>Logout</span>
+            <SidebarMenuButton asChild data-testid="button-logout">
+              <a href="/api/logout">
+                <LogOut />
+                <span>Logout</span>
+              </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

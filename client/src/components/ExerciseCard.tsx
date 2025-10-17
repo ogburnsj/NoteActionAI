@@ -13,9 +13,10 @@ interface ExerciseCardProps {
   unit: "lb" | "kg";
   onEdit?: () => void;
   onDelete?: () => void;
+  onWeightClick?: (weight: number) => void;
 }
 
-export function ExerciseCard({ name, sets, unit, onEdit, onDelete }: ExerciseCardProps) {
+export function ExerciseCard({ name, sets, unit, onEdit, onDelete, onWeightClick }: ExerciseCardProps) {
   return (
     <Card className="p-4 group hover-elevate" data-testid={`card-exercise-${name.toLowerCase().replace(/\s+/g, '-')}`}>
       <div className="flex items-start justify-between mb-3">
@@ -43,7 +44,10 @@ export function ExerciseCard({ name, sets, unit, onEdit, onDelete }: ExerciseCar
         {sets.map((set, index) => (
           <div
             key={index}
-            className="inline-flex items-center gap-2 bg-secondary px-3 py-1 rounded-md"
+            className={`inline-flex items-center gap-2 bg-secondary px-3 py-1 rounded-md ${
+              onWeightClick ? "cursor-pointer hover-elevate active-elevate-2" : ""
+            }`}
+            onClick={() => onWeightClick?.(set.weight)}
             data-testid={`badge-set-${index}`}
           >
             <span className="text-sm font-mono">

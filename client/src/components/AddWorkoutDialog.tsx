@@ -4,6 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, X } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { isUnauthorizedError } from "@/lib/authUtils";
 
 interface Set {
   reps: string;
@@ -11,9 +15,64 @@ interface Set {
 }
 
 export function AddWorkoutDialog() {
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [exerciseName, setExerciseName] = useState("");
   const [sets, setSets] = useState<Set[]>([{ reps: "", weight: "" }]);
+
+  const createWorkoutMutation = useMutation({
+    mutationFn: async (data: { name: string; date: string }) => {
+      const res = await apiRequest("POST", "/api/workouts", data);
+      return res.json();
+    },
+    onSuccess: (workout) => {
+      return createExerciseMutation.mutate({ workoutId: workout.id });
+    },
+    onError: (error: Error) => {
+      if (isUnauthorizedError(error)) {
+        window.location.href = "/api/login";
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to create workout. Please try again.",
+          variant: "destructive",
+        });
+      }
+    },
+  });
+
+  const createExerciseMutation = useMutation({
+    mutationFn: async ({ workoutId }: { workoutId: string }) => {
+      const exerciseData = {
+        workoutId,
+        name: exerciseName,
+        sets: sets.map(s => ({ reps: parseInt(s.reps), weight: parseInt(s.weight) })),
+      };
+      const res = await apiRequest("POST", "/api/exercises", exerciseData);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/workouts"] });
+      toast({
+        title: "Success",
+        description: "Exercise added successfully!",
+      });
+      setOpen(false);
+      setExerciseName("");
+      setSets([{ reps: "", weight: "" }]);
+    },
+    onError: (error: Error) => {
+      if (isUnauthorizedError(error)) {
+        window.location.href = "/api/login";
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to create exercise. Please try again.",
+          variant: "destructive",
+        });
+      }
+    },
+  });
 
   const addSet = () => {
     setSets([...sets, { reps: "", weight: "" }]);
@@ -24,10 +83,20 @@ export function AddWorkoutDialog() {
   };
 
   const handleSubmit = () => {
-    console.log("Workout added:", { exerciseName, sets });
-    setOpen(false);
-    setExerciseName("");
-    setSets([{ reps: "", weight: "" }]);
+    if (!exerciseName.trim() || sets.some(s => !s.reps || !s.weight)) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    createWorkoutMutation.mutate({ 
+      name: `${exerciseName} Workout`, 
+      date: today 
+    });
   };
 
   return (
@@ -60,6 +129,7 @@ export function AddWorkoutDialog() {
               <div key={index} className="flex gap-2">
                 <Input
                   placeholder="Reps"
+                  type="number"
                   value={set.reps}
                   onChange={(e) => {
                     const newSets = [...sets];
@@ -70,6 +140,7 @@ export function AddWorkoutDialog() {
                 />
                 <Input
                   placeholder="Weight"
+                  type="number"
                   value={set.weight}
                   onChange={(e) => {
                     const newSets = [...sets];
@@ -102,11 +173,22 @@ export function AddWorkoutDialog() {
           </div>
 
           <div className="flex gap-2 pt-4">
-            <Button variant="outline" onClick={() => setOpen(false)} className="flex-1" data-testid="button-cancel">
+            <Button 
+              variant="outline" 
+              onClick={() => setOpen(false)} 
+              className="flex-1" 
+              data-testid="button-cancel"
+              disabled={createWorkoutMutation.isPending || createExerciseMutation.isPending}
+            >
               Cancel
             </Button>
-            <Button onClick={handleSubmit} className="flex-1" data-testid="button-save-workout">
-              Save Exercise
+            <Button 
+              onClick={handleSubmit} 
+              className="flex-1" 
+              data-testid="button-save-workout"
+              disabled={createWorkoutMutation.isPending || createExerciseMutation.isPending}
+            >
+              {createWorkoutMutation.isPending || createExerciseMutation.isPending ? "Saving..." : "Save Exercise"}
             </Button>
           </div>
         </div>
