@@ -1,0 +1,96 @@
+Goal:
+Build a full-stack web application where users can log workouts, automatically calculate weight plates for lifts, and track daily calorie intake. The app should have a clean, modern UI and store data persistently.
+
+🧩 Core Features
+
+1. User Authentication
+
+Email/password login and signup.
+
+Store user preferences: units (lb/kg), barbell weight, plate inventory, calorie goals.
+
+2. Workout Tracker
+
+Add, edit, or delete exercises (e.g., squat, bench press, deadlift).
+
+Track sets, reps, and weights used.
+
+Save workout templates.
+
+Display progress graphs over time (PRs, total volume, etc.).
+
+3. Smart Plate Calculator
+
+Input: target total weight (including bar).
+
+Output: list of plates per side (e.g., 45 | 45 | bar).
+
+User can define available plates (e.g., [45, 35, 25, 10, 5, 2.5]).
+
+Support both metric (kg) and imperial (lb) systems.
+
+Optional: show a visual barbell representation.
+
+4. Calorie & Nutrition Tracker
+
+Log meals with calorie and macronutrient details (protein, carbs, fat).
+
+Option to search or manually add foods.
+
+Daily progress bar for calories and macros vs. goals.
+
+Weekly and monthly calorie history charts.
+
+5. Dashboard
+
+Unified dashboard showing:
+
+Workout progress (volume and PR trends).
+
+Calorie intake and macro breakdown.
+
+Remaining calories for the day.
+
+6. Optional Enhancements
+
+Rest timer between sets.
+
+Dark/light mode.
+
+Export data to CSV or PDF.
+
+⚙️ Technical Details
+
+Frontend: React + Tailwind CSS.
+
+Backend: Node.js + Express.
+
+Database: Firebase Firestore or PostgreSQL.
+
+API Routes:
+
+/api/auth – user authentication.
+
+/api/workouts – CRUD for workouts.
+
+/api/plates – plate calculation logic.
+
+/api/nutrition – log and retrieve calorie data.
+
+Charts: Use Chart.js or Recharts for progress visualization.
+
+Storage: Persistent data per user with authentication-based access.
+
+🎯 Objective
+
+Deliver a responsive, mobile-friendly web app that allows users to:
+
+Track workouts and see strength progress.
+
+Automatically calculate the correct barbell plate setup.
+
+Log meals and track daily calorie/macronutrient goals.
+
+View overall fitness progress in one dashboard.
+
+Prioritize speed, ease of use, and visual clarity.
