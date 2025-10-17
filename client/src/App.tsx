@@ -13,6 +13,7 @@ import Landing from "@/pages/Landing";
 import Dashboard from "@/pages/Dashboard";
 import Workouts from "@/pages/Workouts";
 import Nutrition from "@/pages/Nutrition";
+import Cardio from "@/pages/Cardio";
 import Progress from "@/pages/Progress";
 import Settings from "@/pages/Settings";
 import NotFound from "@/pages/not-found";
@@ -29,6 +30,7 @@ function Router() {
           <Route path="/" component={Dashboard} />
           <Route path="/workouts" component={Workouts} />
           <Route path="/nutrition" component={Nutrition} />
+          <Route path="/cardio" component={Cardio} />
           <Route path="/progress" component={Progress} />
           <Route path="/settings" component={Settings} />
         </>
