@@ -1,10 +1,16 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Edit, Trash2, TrendingUp } from "lucide-react";
 
 interface Set {
   reps: number;
   weight: number;
+}
+
+interface ProgressiveSuggestion {
+  suggestedWeight: number;
+  reason: string;
 }
 
 interface ExerciseCardProps {
@@ -14,9 +20,10 @@ interface ExerciseCardProps {
   onEdit?: () => void;
   onDelete?: () => void;
   onWeightClick?: (weight: number) => void;
+  progressiveSuggestion?: ProgressiveSuggestion | null;
 }
 
-export function ExerciseCard({ name, sets, unit, onEdit, onDelete, onWeightClick }: ExerciseCardProps) {
+export function ExerciseCard({ name, sets, unit, onEdit, onDelete, onWeightClick, progressiveSuggestion }: ExerciseCardProps) {
   return (
     <Card className="p-4 group hover-elevate" data-testid={`card-exercise-${name.toLowerCase().replace(/\s+/g, '-')}`}>
       <div className="flex items-start justify-between mb-3">
@@ -40,6 +47,21 @@ export function ExerciseCard({ name, sets, unit, onEdit, onDelete, onWeightClick
           </Button>
         </div>
       </div>
+      
+      {progressiveSuggestion && (
+        <div className="mb-3 p-2 rounded-md bg-primary/10 border border-primary/20">
+          <div className="flex items-start gap-2">
+            <TrendingUp className="h-4 w-4 text-primary mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-primary">
+                Try {progressiveSuggestion.suggestedWeight}{unit} next time
+              </p>
+              <p className="text-xs text-muted-foreground">{progressiveSuggestion.reason}</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="flex flex-wrap gap-2">
         {sets.map((set, index) => (
           <div

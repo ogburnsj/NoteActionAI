@@ -3,11 +3,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, X } from "lucide-react";
+import { Plus, X, FileText } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { TemplateSelector } from "./TemplateSelector";
 
 interface Set {
   reps: string;
@@ -17,6 +18,7 @@ interface Set {
 export function AddWorkoutDialog() {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const [exerciseName, setExerciseName] = useState("");
   const [sets, setSets] = useState<Set[]>([{ reps: "", weight: "" }]);
 
@@ -100,18 +102,31 @@ export function AddWorkoutDialog() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button data-testid="button-add-workout">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Exercise
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md" data-testid="dialog-add-workout">
-        <DialogHeader>
-          <DialogTitle>Add Exercise</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4">
+    <>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button data-testid="button-add-workout">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Exercise
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md" data-testid="dialog-add-workout">
+          <DialogHeader>
+            <DialogTitle>Add Exercise</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setOpen(false);
+                setShowTemplateSelector(true);
+              }}
+              className="w-full"
+              data-testid="button-use-template"
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Use a Template Instead
+            </Button>
           <div>
             <Label htmlFor="exercise-name">Exercise Name</Label>
             <Input
@@ -194,5 +209,12 @@ export function AddWorkoutDialog() {
         </div>
       </DialogContent>
     </Dialog>
+
+    <TemplateSelector 
+      open={showTemplateSelector} 
+      onOpenChange={setShowTemplateSelector}
+      onWorkoutCreated={() => setShowTemplateSelector(false)}
+    />
+    </>
   );
 }

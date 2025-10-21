@@ -15,6 +15,7 @@ import Workouts from "@/pages/Workouts";
 import Nutrition from "@/pages/Nutrition";
 import Cardio from "@/pages/Cardio";
 import Progress from "@/pages/Progress";
+import Programs from "@/pages/Programs";
 import Settings from "@/pages/Settings";
 import NotFound from "@/pages/not-found";
 
@@ -32,6 +33,7 @@ function Router() {
           <Route path="/nutrition" component={Nutrition} />
           <Route path="/cardio" component={Cardio} />
           <Route path="/progress" component={Progress} />
+          <Route path="/programs" component={Programs} />
           <Route path="/settings" component={Settings} />
         </>
       )}

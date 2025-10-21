@@ -9,7 +9,7 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { Home, Dumbbell, UtensilsCrossed, Activity, TrendingUp, Settings, LogOut } from "lucide-react";
+import { Home, Dumbbell, UtensilsCrossed, Activity, TrendingUp, Calendar, Settings, LogOut } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
 const menuItems = [
@@ -18,6 +18,7 @@ const menuItems = [
   { title: "Nutrition", url: "/nutrition", icon: UtensilsCrossed },
   { title: "Cardio", url: "/cardio", icon: Activity },
   { title: "Progress", url: "/progress", icon: TrendingUp },
+  { title: "Programs", url: "/programs", icon: Calendar },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
